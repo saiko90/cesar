@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { 
   Mail, Phone, MapPin, Download, Briefcase, GraduationCap, 
-  Award, User, ChevronDown, ExternalLink, Linkedin, CheckCircle, 
-  Sparkles, MousePointer2
+  Award, User, CheckCircle, Sparkles, ExternalLink
 } from 'lucide-react';
 
 // --- DATA DU CV ---
@@ -15,9 +14,9 @@ const DATA = {
     role: "Assistant Administratif",
     email: "maxime.salvadori@outlook.fr",
     phone: "07 71 22 61 59",
-    location: "Mobilité : Var / Loire",
+    location: "Mobilité : Rhône-Alpes",
     bio: "Curieux de nature et adepte de la résolution de problèmes, j'aime explorer et optimiser les outils numériques pour créer des solutions fluides. Fort de 10 ans d'expérience, je mets ma résilience et ma rigueur au service d'une collaboration transparente et humaine.",
-    // IMPORTANT : Mets ta photo nommée "avatar.png" dans le dossier public
+    // IMPORTANT : Mets ta photo nommée "avatar.jpeg" dans le dossier public
     avatar: "/avatar.jpeg" 
   },
   // IMPORTANT : Mets ton PDF nommé "cv.pdf" dans le dossier public
@@ -92,6 +91,14 @@ export default function CVPage() {
 // --- VISUAL COMPONENTS ---
 
 function BackgroundParticles() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
     return (
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
             {[...Array(20)].map((_, i) => (
@@ -172,10 +179,14 @@ function HeroSection() {
                         {DATA.profile.role}
                     </h2>
                     
-                    <div className="flex flex-wrap gap-4">
-                        <a href={`mailto:${DATA.profile.email}`} className="group relative px-8 py-4 bg-slate-900 text-white rounded-xl font-bold overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all">
-                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="relative flex items-center gap-2">
+                    <div className="flex flex-wrap gap-4 relative z-50">
+                        {/* BOUTON ME CONTACTER RENFORCÉ */}
+                        <a 
+                            href={`mailto:${DATA.profile.email}`} 
+                            className="group relative px-8 py-4 bg-slate-900 text-white rounded-xl font-bold overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all cursor-pointer z-50"
+                        >
+                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity z-0" />
+                            <div className="relative flex items-center gap-2 z-10">
                                 <Mail size={20} /> Me contacter
                             </div>
                         </a>
@@ -185,7 +196,7 @@ function HeroSection() {
                             href={DATA.cvFile} 
                             target="_blank" 
                             download="CV_Maxime_Salvadori.pdf"
-                            className="group flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all"
+                            className="group flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer z-50"
                         >
                             <Download size={20} className="group-hover:translate-y-1 transition-transform" /> 
                             Télécharger CV
@@ -193,8 +204,15 @@ function HeroSection() {
                     </div>
 
                     <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-6 text-slate-400 text-sm font-medium">
-                        <span className="flex items-center gap-2 hover:text-blue-600 transition-colors"><Phone size={16} className="text-blue-500"/> {DATA.profile.phone}</span>
-                        <span className="flex items-center gap-2 hover:text-blue-600 transition-colors"><MapPin size={16} className="text-blue-500"/> {DATA.profile.location}</span>
+                        <a href={`mailto:${DATA.profile.email}`} className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                            <Mail size={16} className="text-blue-500"/> {DATA.profile.email}
+                        </a>
+                        <span className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                            <Phone size={16} className="text-blue-500"/> {DATA.profile.phone}
+                        </span>
+                        <span className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                            <MapPin size={16} className="text-blue-500"/> {DATA.profile.location}
+                        </span>
                     </div>
                 </motion.div>
 
@@ -221,7 +239,6 @@ function TiltCard({ mouseX, mouseY }: any) {
                 className="relative w-80 h-96 md:w-[26rem] md:h-[32rem] bg-white p-4 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-100"
             >
                 <div className="absolute inset-4 bg-slate-100 rounded-[2rem] overflow-hidden">
-                     {/* Photo ou Placeholder si pas d'image */}
                      {DATA.profile.avatar ? (
                         <img 
                             src={DATA.profile.avatar} 
@@ -394,7 +411,8 @@ function EducationSection() {
                                 <span className="text-xs font-mono text-slate-400 border border-white/10 px-3 py-1 rounded-full">{edu.date}</span>
                             </div>
                             <p className="text-slate-300 font-medium flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                {/* CORRECTION : on utilise span au lieu de div pour éviter l'erreur HTML */}
+                                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block"></span>
                                 {edu.school}
                             </p>
                         </motion.div>
@@ -411,8 +429,6 @@ function FooterSection() {
             <h2 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">{DATA.profile.name}</h2>
             <div className="flex justify-center gap-6 mb-8">
                 <SocialLink icon={<Mail size={20} />} href={`mailto:${DATA.profile.email}`} />
-                <SocialLink icon={<Linkedin size={20} />} href="#" />
-                <SocialLink icon={<ExternalLink size={20} />} href="#" />
             </div>
             <p className="text-slate-400 text-sm font-medium">© 2026 - Conçu avec passion & Next.js</p>
         </footer>
