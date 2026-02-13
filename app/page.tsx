@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { 
   Mail, Phone, MapPin, Download, Briefcase, GraduationCap, 
-  Award, User, CheckCircle, Sparkles, ExternalLink
+  Award, User, CheckCircle, Sparkles, ExternalLink, ChevronDown
 } from 'lucide-react';
 
 // --- DATA DU CV ---
@@ -16,10 +16,8 @@ const DATA = {
     phone: "07 71 22 61 59",
     location: "Mobilité : Rhône-Alpes",
     bio: "Curieux de nature et adepte de la résolution de problèmes, j'aime explorer et optimiser les outils numériques pour créer des solutions fluides. Fort de 10 ans d'expérience, je mets ma résilience et ma rigueur au service d'une collaboration transparente et humaine.",
-    // IMPORTANT : Mets ta photo nommée "avatar.jpeg" dans le dossier public
     avatar: "/avatar.jpeg" 
   },
-  // IMPORTANT : Mets ton PDF nommé "cv.pdf" dans le dossier public
   cvFile: "/cv.pdf",
   skills: [
     "Gestion de projet", "Communication", "Gestion RH", "Analyse de données", 
@@ -68,7 +66,7 @@ const DATA = {
 };
 
 export default function CVPage() {
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress, scrollY } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
@@ -77,6 +75,9 @@ export default function CVPage() {
       
       {/* Scroll Progress Bar */}
       <motion.div style={{ scaleX }} className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 transform-origin-left z-50 shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
+
+      {/* Bouton Scroll Flottant (Cliquable) */}
+      <ScrollIndicator scrollY={scrollY} />
 
       <HeroSection />
       <AboutSection />
@@ -89,6 +90,42 @@ export default function CVPage() {
 }
 
 // --- VISUAL COMPONENTS ---
+
+function ScrollIndicator({ scrollY }: any) {
+    const opacity = useTransform(scrollY, [0, 150], [1, 0]);
+    const scale = useTransform(scrollY, [0, 150], [1, 0.5]);
+
+    const scrollToAbout = () => {
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) {
+            aboutSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    return (
+        <motion.button 
+            onClick={scrollToAbout}
+            style={{ opacity, scale }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2 cursor-pointer group"
+        >
+            <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-slate-100 group-hover:text-blue-600 transition-colors"
+            >
+                Scroll
+            </motion.p>
+            <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-12 h-12 rounded-full bg-white/30 backdrop-blur-md border border-white/50 shadow-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all"
+            >
+                <ChevronDown size={28} strokeWidth={2.5} />
+            </motion.div>
+        </motion.button>
+    );
+}
 
 function BackgroundParticles() {
     const [mounted, setMounted] = useState(false);
@@ -151,7 +188,6 @@ function HeroSection() {
         <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-white/50 backdrop-blur-3xl" onMouseMove={handleMouseMove}>
             <div className="container mx-auto px-6 relative z-10 flex flex-col-reverse md:flex-row items-center gap-12 pt-20">
                 
-                {/* Text Content */}
                 <motion.div 
                     initial={{ opacity: 0, x: -50 }} 
                     animate={{ opacity: 1, x: 0 }} 
@@ -180,7 +216,6 @@ function HeroSection() {
                     </h2>
                     
                     <div className="flex flex-wrap gap-4 relative z-50">
-                        {/* BOUTON ME CONTACTER RENFORCÉ */}
                         <a 
                             href={`mailto:${DATA.profile.email}`} 
                             className="group relative px-8 py-4 bg-slate-900 text-white rounded-xl font-bold overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all cursor-pointer z-50"
@@ -191,7 +226,6 @@ function HeroSection() {
                             </div>
                         </a>
                         
-                        {/* BOUTON TÉLÉCHARGEMENT PDF */}
                         <a 
                             href={DATA.cvFile} 
                             target="_blank" 
@@ -216,7 +250,6 @@ function HeroSection() {
                     </div>
                 </motion.div>
 
-                {/* 3D Avatar Card */}
                 <TiltCard mouseX={mouseX} mouseY={mouseY} />
             </div>
         </section>
@@ -252,7 +285,6 @@ function TiltCard({ mouseX, mouseY }: any) {
                      )}
                 </div>
                 
-                {/* Floating Badge */}
                 <motion.div 
                     animate={{ y: [0, -10, 0] }} 
                     transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
@@ -273,7 +305,7 @@ function TiltCard({ mouseX, mouseY }: any) {
 
 function AboutSection() {
     return (
-        <section className="py-24 bg-white relative z-10">
+        <section id="about" className="py-24 bg-white relative z-10 scroll-mt-20">
             <div className="container mx-auto px-6 max-w-4xl text-center">
                 <motion.div 
                     initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
@@ -300,7 +332,6 @@ function ExperienceSection() {
                 </div>
 
                 <div className="space-y-6 relative">
-                    {/* Timeline Line */}
                     <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-blue-200 to-transparent hidden md:block"></div>
 
                     {DATA.experience.map((exp, i) => (
@@ -312,7 +343,6 @@ function ExperienceSection() {
                             transition={{ delay: i * 0.1 }}
                             className="relative md:pl-24 group"
                         >
-                            {/* Dot */}
                             <div className="absolute left-[20px] top-8 w-4 h-4 bg-white rounded-full border-4 border-blue-500 shadow-sm hidden md:block group-hover:scale-150 transition-transform z-10"></div>
                             
                             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300">
@@ -342,7 +372,6 @@ function SkillsSection() {
         <section className="py-24 bg-white relative z-10">
             <div className="container mx-auto px-6 max-w-6xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                    {/* Hard Skills */}
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                         <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600"><Award size={20} /></div>
@@ -361,7 +390,6 @@ function SkillsSection() {
                         </div>
                     </motion.div>
 
-                    {/* Soft Skills */}
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
                         <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
                             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600"><Sparkles size={20} /></div>
@@ -389,7 +417,6 @@ function SkillsSection() {
 function EducationSection() {
     return (
         <section className="py-24 bg-[#0f172a] text-white relative overflow-hidden z-10">
-             {/* Background Gradients */}
              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
              
@@ -411,7 +438,6 @@ function EducationSection() {
                                 <span className="text-xs font-mono text-slate-400 border border-white/10 px-3 py-1 rounded-full">{edu.date}</span>
                             </div>
                             <p className="text-slate-300 font-medium flex items-center gap-2">
-                                {/* CORRECTION : on utilise span au lieu de div pour éviter l'erreur HTML */}
                                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block"></span>
                                 {edu.school}
                             </p>
