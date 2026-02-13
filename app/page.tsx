@@ -18,7 +18,7 @@ const DATA = {
     bio: "Curieux de nature et adepte de la résolution de problèmes, j'aime explorer et optimiser les outils numériques pour créer des solutions fluides. Fort de 10 ans d'expérience, je mets ma résilience et ma rigueur au service d'une collaboration transparente et humaine.",
     avatar: "/avatar.jpeg" 
   },
-  cvFile: "/cv.pdf",
+  cvFile: "/cv.maxime.salvadori.pdf",
   skills: [
     "Gestion de projet", "Communication", "Gestion RH", "Analyse de données", 
     "Résolution de problèmes", "Gestion de paie", "Pack Office", "Normes et sécurité"
